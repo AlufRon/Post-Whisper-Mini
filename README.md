@@ -1,4 +1,4 @@
-"# Post-Whisper-Mini" 
+
 About Post Whisper: 
 Post Whisper platform Is used to manage Twitter Bots for the purpose of promoting Pro-Israel content using unique responses for each action. Adding Bots to the system and managing posts that the Bots will share and comment on using Gemini to generate the comment. 
 On the platform, the user will be able to see the Bot’s activity statistics and engagement analytics, as well as manage what, when and how the Bots will interact with the posts he chooses, as well as determining the bots “personality traits”.
