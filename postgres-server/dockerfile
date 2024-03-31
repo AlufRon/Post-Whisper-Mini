@@ -1,0 +1,21 @@
+FROM node:21-alpine
+
+WORKDIR /usr/src/app
+
+RUN apk add --no-cache postgresql-client
+
+COPY package*.json ./
+RUN npm install
+
+COPY prisma ./prisma/
+COPY . .
+
+# Generate Prisma client
+RUN npx prisma generate
+
+RUN npx prisma generate
+
+COPY wait-for-db.sh entrypoint.sh ./
+RUN chmod +x ./wait-for-db.sh ./entrypoint.sh
+
+ENTRYPOINT ["./entrypoint.sh"]

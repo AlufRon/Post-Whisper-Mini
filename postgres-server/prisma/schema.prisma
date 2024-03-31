@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Bot {
+  id                String   @id @default(uuid())
+  email             String   @unique
+  name              String
+  status            Status   @default(ACTIVE)
+  accessToken       String?  @map(name: "Access_Token")
+  accessTokenSecret String?  @map(name: "Access_Token_Secret")
+  personalityTraits String[] @map(name: "Personality_Traits")
+  createdAt         DateTime @default(now()) @map(name: "Created_At")
+  updatedAt         DateTime @default(now()) @updatedAt @map(name: "Updated_At")
+  Actions           Action[]
+
+  @@map(name: "Bots")
+}
+
+model Post {
+  id        String   @id @default(uuid())
+  link      String?  @unique
+  content   String
+  type      PostType
+  createdAt DateTime @default(now()) @map(name: "Created_At")
+  updatedAt DateTime @default(now()) @updatedAt @map(name: "Updated_At")
+  Actions   Action[]
+
+  @@map(name: "Posts")
+}
+
+model Action {
+  id            String       @id @default(uuid())
+  botId         String       @map(name: "Bot_Id")
+  postId        String       @map(name: "Post_Id")
+  comment       String?
+  twitterPostId String?      @map(name: "Twitter_Post_Id")
+  actionType    ActionType
+  status        ActionStatus @default(PENDING)
+  createdAt     DateTime     @default(now()) @map(name: "Created_At")
+  updatedAt     DateTime     @default(now()) @updatedAt @map(name: "Updated_At")
+  Bot           Bot          @relation(fields: [botId], references: [id])
+  Post          Post         @relation(fields: [postId], references: [id])
+
+  @@map(name: "Actions")
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  DOWN
+  MAINTENANCE
+}
+
+enum PostType {
+  TWEET
+  RETWEET
+  REPLY
+}
+
+enum ActionType {
+  LIKE
+  RETWEET
+  REPLY
+  SHARE
+}
+
+enum ActionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}

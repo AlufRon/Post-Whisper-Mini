@@ -1,0 +1,61 @@
+version: '3'
+services:
+  twitter-bot-service:
+    build: 
+      context: ./Tweeter-Bot
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./Tweeter-Bot:/app
+    restart: always
+
+  comment-generator-service:
+    build: 
+      context: ./Comment-Generator
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./Comment-Generator:/app
+    restart: always
+
+  postgres-server:
+    build: 
+      context: ./postgres-server
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./postgres-server:/app
+    restart: always
+    depends_on:
+      - db
+      - migrate
+
+
+  migrate:
+    build: 
+      context: ./postgres-server
+      dockerfile: Dockerfile
+    command: npm run migrate
+    depends_on:
+      - db
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: whisper
+    ports:
+      - "5432:5432"
+      
+  whisper-front-end:
+    build: 
+      context: ./whisper-front
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    restart: always
